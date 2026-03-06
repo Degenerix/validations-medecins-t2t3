@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Validation — Dr Emilie BRES</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',Arial,sans-serif;background:#f0f4f8;padding:24px;font-size:11pt}
+.card{max-width:820px;margin:0 auto;background:white;border-radius:12px;box-shadow:0 2px 14px rgba(0,0,0,.10);overflow:hidden}
+.top-bar{height:6px}
+.header{padding:18px 24px 14px;border-bottom:1px solid #eee;display:flex;align-items:center;gap:14px}
+.avatar{width:50px;height:50px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14pt;color:white;flex-shrink:0}
+.hinfo h1{font-size:14pt;font-weight:800;color:#1a3d52}
+.hinfo .sub{font-size:8.5pt;color:#888;margin-top:3px}
+.body{padding:22px 24px}
+.notice{background:#fff8e1;border:1.5px solid #f9a825;border-radius:8px;padding:14px 16px;margin-bottom:20px;font-size:8.5pt;color:#4a3500;line-height:1.9}
+.notice-title{font-weight:800;font-size:10pt;color:#e65100;margin-bottom:8px}
+.notice ol{padding-left:20px}
+.notice li{margin-bottom:5px}
+.section{margin-bottom:22px}
+.sec-title{font-size:10pt;font-weight:700;color:white;padding:7px 13px;border-radius:5px;margin-bottom:12px}
+.astr-item{border:1.5px solid #c8e6c9;border-radius:8px;padding:13px 15px;background:#f9fff9;margin-bottom:10px}
+.astr-top{display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:10px}
+.astr-dates{font-weight:700;color:#1a3d52;font-size:11pt}
+.astr-label{font-size:8.5pt;color:#555;margin-top:3px}
+table.t{width:100%;border-collapse:collapse;font-size:8.5pt}
+table.t th{background:#f5f9fc;color:#2c5f7c;font-weight:700;padding:7px 10px;text-align:left;border-bottom:2px solid #dde8f0;font-size:7.5pt;text-transform:uppercase;letter-spacing:.3px}
+table.t td{padding:9px 10px;border-bottom:1px solid #f0f4f8;vertical-align:top}
+table.t tr:last-child td{border-bottom:none}
+table.t tr:nth-child(even) td{background:#fafcfe}
+.period{font-weight:600;color:#1a3d52;white-space:nowrap}
+.dur{color:#aaa;font-size:7.5pt}
+.badge{display:inline-block;padding:2px 8px;border-radius:10px;font-size:7pt;font-weight:600}
+.bc{background:#e8f5e9;color:#2e7d32}
+.bp{background:#fff3e0;color:#e65100}
+.radio-group{display:flex;gap:8px;flex-wrap:wrap}
+.rlabel{font-size:8.5pt;display:flex;align-items:center;gap:5px;cursor:pointer;padding:5px 11px;border-radius:5px;border:1.5px solid #ddd;background:white;white-space:nowrap;transition:all .15s}
+.rlabel:hover{border-color:#5a9fb8}
+.ok-label{border-color:#81c784}
+.ko-label{border-color:#ef9a9a}
+input[type=radio]{accent-color:#2c5f7c;width:14px;height:14px}
+.date-picker-group{display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end;margin-top:8px}
+.dp-field{display:flex;flex-direction:column;gap:3px}
+.dp-field label{font-size:7.5pt;color:#555;font-weight:600}
+input[type=date]{border:1.5px solid #b0d4e3;border-radius:5px;padding:5px 8px;font-size:9pt;font-family:inherit;background:white;color:#1a3d52;cursor:pointer;min-width:145px}
+input[type=date]:focus{outline:none;border-color:#1976d2}
+input[type=date].error{border-color:#e53935;background:#fff5f5}
+.date-error{font-size:7.5pt;color:#e53935;font-weight:600;margin-top:4px;display:none}
+.date-error.show{display:block}
+.text-input{border:1.5px solid #b0d4e3;border-radius:5px;padding:5px 8px;font-size:9pt;width:220px;font-family:inherit}
+.text-input:focus{outline:none;border-color:#5a9fb8}
+.type-select{border:1.5px solid #b0d4e3;border-radius:5px;padding:5px 7px;font-size:9pt;font-family:inherit;background:white}
+.btn-valider{background:#2c5f7c;color:white;border:none;padding:7px 14px;border-radius:5px;cursor:pointer;font-size:8.5pt;font-weight:700;white-space:nowrap}
+.btn-valider:hover{background:#1a3d52}
+.btn-valider:disabled{background:#bbb;cursor:not-allowed}
+.confirmed-badge{background:#e8f5e9;color:#2e7d32;border:1.5px solid #81c784;font-size:8pt;font-weight:700;padding:3px 10px;border-radius:5px;display:inline-block}
+.corrected-badge{background:#fff3e0;color:#e65100;border:1.5px solid #ffb74d;font-size:8pt;font-weight:700;padding:3px 10px;border-radius:5px;display:inline-block}
+.add-row{display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end;margin-bottom:8px;background:#f9fbff;border:1.5px dashed #b0d4e3;padding:11px;border-radius:6px}
+.add-row label{font-size:7.5pt;color:#555;display:block;margin-bottom:3px;font-weight:600}
+.btn-add{background:#e3f2fd;color:#1565c0;border:1.5px solid #64b5f6;padding:8px 15px;border-radius:5px;cursor:pointer;font-size:8.5pt;font-weight:700;margin-top:8px}
+.btn-add:hover{background:#bbdefb}
+.btn-remove{background:none;border:none;color:#ef5350;cursor:pointer;font-size:14pt;padding:0 6px;line-height:1}
+.no-indisp{font-size:8.5pt;color:#888;padding:12px 4px;font-style:italic}
+.rmq-box{width:100%;border:1.5px solid #cde0ea;border-radius:6px;padding:10px;font-size:9pt;resize:vertical;min-height:75px;font-family:inherit}
+.rmq-box:focus{outline:none;border-color:#5a9fb8}
+.btn-zone{display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap;margin-top:22px}
+.btn{border:none;padding:11px 22px;border-radius:7px;cursor:pointer;font-size:10pt;font-weight:700;display:flex;align-items:center;gap:7px}
+.btn-print{background:#f0f4f8;color:#2c5f7c;border:2px solid #2c5f7c}
+.modal-overlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.55);z-index:1000;justify-content:center;align-items:center}
+.modal-overlay.show{display:flex}
+.modal{background:white;border-radius:12px;padding:26px;max-width:640px;width:94%;display:flex;flex-direction:column;gap:14px;box-shadow:0 4px 24px rgba(0,0,0,.25)}
+.modal h2{font-size:12pt;color:#1a3d52}
+.modal .sub-modal{font-size:8.5pt;color:#555;line-height:1.6;background:#e3f2fd;padding:9px 12px;border-radius:6px}
+.modal textarea{min-height:250px;border:1.5px solid #cde0ea;border-radius:6px;padding:10px;font-family:monospace;font-size:8.5pt;resize:vertical}
+.modal-btns{display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap}
+.btn-copy{background:#2c5f7c;color:white;border:none;padding:9px 18px;border-radius:6px;cursor:pointer;font-weight:700;font-size:9pt}
+.btn-openmail{background:#e8f5e9;color:#2e7d32;border:2px solid #81c784;padding:9px 18px;border-radius:6px;cursor:pointer;font-weight:700;font-size:9pt}
+.btn-close{background:#f5f5f5;color:#555;border:none;padding:9px 18px;border-radius:6px;cursor:pointer;font-weight:700;font-size:9pt}
+.copy-ok{font-size:8pt;color:#2e7d32;font-weight:600;text-align:right}
+.footer-note{text-align:center;font-size:7.5pt;color:#bbb;margin-top:14px}
+@media print{body{background:white;padding:0}.card{box-shadow:none}.btn-zone,.footer-note,.modal-overlay{display:none!important}}
+
+.top-bar{background:#1976d2}
+.avatar{background:#1976d2}
+.btn-envoyer{background:#1976d2;color:white}
+.btn-envoyer:hover{opacity:.9}
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="top-bar"></div>
+  <div class="header">
+    <div class="avatar">EB</div>
+    <div class="hinfo">
+      <h1>Dr Emilie BRES</h1>
+      <div class="sub">Fiche de validation · Planning HaD Fr · T2-T3 2026 · Avril &#8594; Septembre 2026</div>
+    </div>
+  </div>
+  <div class="body">
+    <div class="notice">
+      <div class="notice-title">&#128216; À lire attentivement avant de remplir cette fiche</div>
+      <ol>
+        <li>Cette fiche récapitule les <strong>indisponibilités enregistrées</strong> vous concernant pour la période T2-T3 2026, ainsi que les <strong>astreintes ou délégations pré-positionnées</strong> sur lesquelles votre confirmation est demandée.</li>
+        <li>Pour chaque astreinte, cochez <strong>Confirmée</strong> ou <strong>À modifier</strong> — saisissez la correction et cliquez sur <strong>Valider</strong>.</li>
+        <li>Pour chaque indisponibilité, cochez <strong>OK</strong> si l'information est exacte, ou <strong>Corriger</strong> pour modifier — un sélecteur de date s'ouvre, choisissez les nouvelles dates puis cliquez sur <strong>Valider</strong>. La date de fin ne peut pas être antérieure à la date de début.</li>
+        <li>Si des périodes d'indisponibilité manquent, cliquez sur <strong>+ Ajouter une période</strong> (3 ajouts maximum).</li>
+        <li>Utilisez la zone <strong>Remarques générales</strong> pour tout commentaire complémentaire.</li>
+        <li>Une fois la fiche complétée, cliquez sur <strong>Préparer l'envoi</strong> : un résumé s'affiche — copiez-le et collez-le dans un email à <strong>l.duteille@hadfrance.fr</strong>.</li>
+      </ol>
+    </div>
+
+    <div class="section">
+      <div class="sec-title" style="background:#2e7d32">&#128204; Astreintes / délégations pré-positionnées — confirmation demandée</div>
+      
+        <div class="astr-item">
+          <div class="astr-top">
+            <div>
+              <div class="astr-dates">&#128197; 04 au 08/05/2026</div>
+              <div class="astr-label">Astreinte semaine S19</div>
+            </div>
+            <div class="radio-group">
+              <label class="rlabel ok-label"><input type="radio" name="astr_0" value="ok" onchange="setAstrOk(0)"> &#10003; Confirmée</label>
+              <label class="rlabel ko-label"><input type="radio" name="astr_0" value="ko" onchange="setAstrKo(0)"> &#9998; À modifier</label>
+            </div>
+          </div>
+          <div id="astr_corr_0" style="display:none;margin-top:10px">
+            <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end">
+              <div><label style="font-size:7.5pt;color:#555;font-weight:600;display:block;margin-bottom:3px">Nouvelle date / période :</label>
+              <input type="text" id="astr_new_0" class="text-input" placeholder="ex: 18 au 22/05/2026"></div>
+              <button class="btn-valider" onclick="validerAstr(0)">&#10004; Valider</button>
+            </div>
+          </div>
+          <div id="astr_ok_0" style="display:none;margin-top:8px"></div>
+        </div>
+    </div>
+
+    <div class="section">
+      <div class="sec-title" style="background:#1565c0">&#128203; Indisponibilités enregistrées — T2 &amp; T3 2026</div>
+      <table class="t"><thead><tr><th>Du</th><th>Au</th><th>Durée</th><th>Type</th><th style="min-width:200px">Validation</th></tr></thead><tbody>
+        <tr id="row_0">
+          <td class="period">08/04/2026</td>
+          <td class="period">19/04/2026</td>
+          <td class="dur">10 j</td>
+          <td><span class="badge bc">Congés</span></td>
+          <td>
+            <div class="radio-group">
+              <label class="rlabel ok-label"><input type="radio" name="indisp_0" value="ok" onchange="setOk(0)"> &#10003; OK</label>
+              <label class="rlabel ko-label"><input type="radio" name="indisp_0" value="ko" onchange="setKo(0)"> &#9998; Corriger</label>
+            </div>
+            <div id="corr_zone_0" style="display:none;margin-top:10px">
+              <div class="date-picker-group">
+                <div class="dp-field"><label>Du :</label>
+                  <input type="date" id="new_du_0" value="2026-04-08" min="2026-04-01" max="2026-10-31" onchange="onDuChange(0)"></div>
+                <div class="dp-field"><label>Au :</label>
+                  <input type="date" id="new_au_0" value="2026-04-19" min="2026-04-08" max="2026-10-31" onchange="onAuChange(0)"></div>
+                <div class="dp-field"><label>Type :</label>
+                  <select id="new_type_0" class="type-select">
+                    <option selected>Congés</option>
+                    <option >Conv. perso</option>
+                    <option>Formation</option>
+                    <option>Sans astreinte</option>
+                  </select></div>
+                <div class="dp-field" style="justify-content:flex-end">
+                  <button class="btn-valider" id="btn_v_0" onclick="validerCorr(0)">&#10004; Valider</button>
+                </div>
+              </div>
+              <div class="date-error" id="date_err_0">&#9888; La date de fin doit être égale ou postérieure à la date de début.</div>
+            </div>
+            <div id="ok_msg_0" style="display:none;margin-top:5px"><span class="confirmed-badge">&#10003; Confirmé</span></div>
+            <div id="corr_msg_0" style="display:none;margin-top:5px"></div>
+          </td>
+        </tr>
+        <tr id="row_1">
+          <td class="period">23/04/2026</td>
+          <td class="period">23/04/2026</td>
+          <td class="dur">1 j</td>
+          <td><span class="badge bp">Conv. perso</span></td>
+          <td>
+            <div class="radio-group">
+              <label class="rlabel ok-label"><input type="radio" name="indisp_1" value="ok" onchange="setOk(1)"> &#10003; OK</label>
+              <label class="rlabel ko-label"><input type="radio" name="indisp_1" value="ko" onchange="setKo(1)"> &#9998; Corriger</label>
+            </div>
+            <div id="corr_zone_1" style="display:none;margin-top:10px">
+              <div class="date-picker-group">
+                <div class="dp-field"><label>Du :</label>
+                  <input type="date" id="new_du_1" value="2026-04-23" min="2026-04-01" max="2026-10-31" onchange="onDuChange(1)"></div>
+                <div class="dp-field"><label>Au :</label>
+                  <input type="date" id="new_au_1" value="2026-04-23" min="2026-04-23" max="2026-10-31" onchange="onAuChange(1)"></div>
+                <div class="dp-field"><label>Type :</label>
+                  <select id="new_type_1" class="type-select">
+                    <option >Congés</option>
+                    <option selected>Conv. perso</option>
+                    <option>Formation</option>
+                    <option>Sans astreinte</option>
+                  </select></div>
+                <div class="dp-field" style="justify-content:flex-end">
+                  <button class="btn-valider" id="btn_v_1" onclick="validerCorr(1)">&#10004; Valider</button>
+                </div>
+              </div>
+              <div class="date-error" id="date_err_1">&#9888; La date de fin doit être égale ou postérieure à la date de début.</div>
+            </div>
+            <div id="ok_msg_1" style="display:none;margin-top:5px"><span class="confirmed-badge">&#10003; Confirmé</span></div>
+            <div id="corr_msg_1" style="display:none;margin-top:5px"></div>
+          </td>
+        </tr>
+        <tr id="row_2">
+          <td class="period">01/05/2026</td>
+          <td class="period">03/05/2026</td>
+          <td class="dur">3 j</td>
+          <td><span class="badge bp">Conv. perso</span></td>
+          <td>
+            <div class="radio-group">
+              <label class="rlabel ok-label"><input type="radio" name="indisp_2" value="ok" onchange="setOk(2)"> &#10003; OK</label>
+              <label class="rlabel ko-label"><input type="radio" name="indisp_2" value="ko" onchange="setKo(2)"> &#9998; Corriger</label>
+            </div>
+            <div id="corr_zone_2" style="display:none;margin-top:10px">
+              <div class="date-picker-group">
+                <div class="dp-field"><label>Du :</label>
+                  <input type="date" id="new_du_2" value="2026-05-01" min="2026-04-01" max="2026-10-31" onchange="onDuChange(2)"></div>
+                <div class="dp-field"><label>Au :</label>
+                  <input type="date" id="new_au_2" value="2026-05-03" min="2026-05-01" max="2026-10-31" onchange="onAuChange(2)"></div>
+                <div class="dp-field"><label>Type :</label>
+                  <select id="new_type_2" class="type-select">
+                    <option >Congés</option>
+                    <option selected>Conv. perso</option>
+                    <option>Formation</option>
+                    <option>Sans astreinte</option>
+                  </select></div>
+                <div class="dp-field" style="justify-content:flex-end">
+                  <button class="btn-valider" id="btn_v_2" onclick="validerCorr(2)">&#10004; Valider</button>
+                </div>
+              </div>
+              <div class="date-error" id="date_err_2">&#9888; La date de fin doit être égale ou postérieure à la date de début.</div>
+            </div>
+            <div id="ok_msg_2" style="display:none;margin-top:5px"><span class="confirmed-badge">&#10003; Confirmé</span></div>
+            <div id="corr_msg_2" style="display:none;margin-top:5px"></div>
+          </td>
+        </tr>
+        <tr id="row_3">
+          <td class="period">20/05/2026</td>
+          <td class="period">20/05/2026</td>
+          <td class="dur">1 j</td>
+          <td><span class="badge bp">Conv. perso</span></td>
+          <td>
+            <div class="radio-group">
+              <label class="rlabel ok-label"><input type="radio" name="indisp_3" value="ok" onchange="setOk(3)"> &#10003; OK</label>
+              <label class="rlabel ko-label"><input type="radio" name="indisp_3" value="ko" onchange="setKo(3)"> &#9998; Corriger</label>
+            </div>
+            <div id="corr_zone_3" style="display:none;margin-top:10px">
+              <div class="date-picker-group">
+                <div class="dp-field"><label>Du :</label>
+                  <input type="date" id="new_du_3" value="2026-05-20" min="2026-04-01" max="2026-10-31" onchange="onDuChange(3)"></div>
+                <div class="dp-field"><label>Au :</label>
+                  <input type="date" id="new_au_3" value="2026-05-20" min="2026-05-20" max="2026-10-31" onchange="onAuChange(3)"></div>
+                <div class="dp-field"><label>Type :</label>
+                  <select id="new_type_3" class="type-select">
+                    <option >Congés</option>
+                    <option selected>Conv. perso</option>
+                    <option>Formation</option>
+                    <option>Sans astreinte</option>
+                  </select></div>
+                <div class="dp-field" style="justify-content:flex-end">
+                  <button class="btn-valider" id="btn_v_3" onclick="validerCorr(3)">&#10004; Valider</button>
+                </div>
+              </div>
+              <div class="date-error" id="date_err_3">&#9888; La date de fin doit être égale ou postérieure à la date de début.</div>
+            </div>
+            <div id="ok_msg_3" style="display:none;margin-top:5px"><span class="confirmed-badge">&#10003; Confirmé</span></div>
+            <div id="corr_msg_3" style="display:none;margin-top:5px"></div>
+          </td>
+        </tr>
+        <tr id="row_4">
+          <td class="period">23/05/2026</td>
+          <td class="period">25/05/2026</td>
+          <td class="dur">3 j</td>
+          <td><span class="badge bp">Conv. perso</span></td>
+          <td>
+            <div class="radio-group">
+              <label class="rlabel ok-label"><input type="radio" name="indisp_4" value="ok" onchange="setOk(4)"> &#10003; OK</label>
+              <label class="rlabel ko-label"><input type="radio" name="indisp_4" value="ko" onchange="setKo(4)"> &#9998; Corriger</label>
+            </div>
+            <div id="corr_zone_4" style="display:none;margin-top:10px">
+              <div class="date-picker-group">
+                <div class="dp-field"><label>Du :</label>
+                  <input type="date" id="new_du_4" value="2026-05-23" min="2026-04-01" max="2026-10-31" onchange="onDuChange(4)"></div>
+                <div class="dp-field"><label>Au :</label>
+                  <input type="date" id="new_au_4" value="2026-05-25" min="2026-05-23" max="2026-10-31" onchange="onAuChange(4)"></div>
+                <div class="dp-field"><label>Type :</label>
+                  <select id="new_type_4" class="type-select">
+                    <option >Congés</option>
+                    <option selected>Conv. perso</option>
+                    <option>Formation</option>
+                    <option>Sans astreinte</option>
+                  </select></div>
+                <div class="dp-field" style="justify-content:flex-end">
+                  <button class="btn-valider" id="btn_v_4" onclick="validerCorr(4)">&#10004; Valider</button>
+                </div>
+              </div>
+              <div class="date-error" id="date_err_4">&#9888; La date de fin doit être égale ou postérieure à la date de début.</div>
+            </div>
+            <div id="ok_msg_4" style="display:none;margin-top:5px"><span class="confirmed-badge">&#10003; Confirmé</span></div>
+            <div id="corr_msg_4" style="display:none;margin-top:5px"></div>
+          </td>
+        </tr>
+        <tr id="row_5">
+          <td class="period">13/06/2026</td>
+          <td class="period">05/07/2026</td>
+          <td class="dur">23 j</td>
+          <td><span class="badge bc">Congés</span></td>
+          <td>
+            <div class="radio-group">
+              <label class="rlabel ok-label"><input type="radio" name="indisp_5" value="ok" onchange="setOk(5)"> &#10003; OK</label>
+              <label class="rlabel ko-label"><input type="radio" name="indisp_5" value="ko" onchange="setKo(5)"> &#9998; Corriger</label>
+            </div>
+            <div id="corr_zone_5" style="display:none;margin-top:10px">
+              <div class="date-picker-group">
+                <div class="dp-field"><label>Du :</label>
+                  <input type="date" id="new_du_5" value="2026-06-13" min="2026-04-01" max="2026-10-31" onchange="onDuChange(5)"></div>
+                <div class="dp-field"><label>Au :</label>
+                  <input type="date" id="new_au_5" value="2026-07-05" min="2026-06-13" max="2026-10-31" onchange="onAuChange(5)"></div>
+                <div class="dp-field"><label>Type :</label>
+                  <select id="new_type_5" class="type-select">
+                    <option selected>Congés</option>
+                    <option >Conv. perso</option>
+                    <option>Formation</option>
+                    <option>Sans astreinte</option>
+                  </select></div>
+                <div class="dp-field" style="justify-content:flex-end">
+                  <button class="btn-valider" id="btn_v_5" onclick="validerCorr(5)">&#10004; Valider</button>
+                </div>
+              </div>
+              <div class="date-error" id="date_err_5">&#9888; La date de fin doit être égale ou postérieure à la date de début.</div>
+            </div>
+            <div id="ok_msg_5" style="display:none;margin-top:5px"><span class="confirmed-badge">&#10003; Confirmé</span></div>
+            <div id="corr_msg_5" style="display:none;margin-top:5px"></div>
+          </td>
+        </tr>
+        <tr id="row_6">
+          <td class="period">10/07/2026</td>
+          <td class="period">12/07/2026</td>
+          <td class="dur">3 j</td>
+          <td><span class="badge bp">Conv. perso</span></td>
+          <td>
+            <div class="radio-group">
+              <label class="rlabel ok-label"><input type="radio" name="indisp_6" value="ok" onchange="setOk(6)"> &#10003; OK</label>
+              <label class="rlabel ko-label"><input type="radio" name="indisp_6" value="ko" onchange="setKo(6)"> &#9998; Corriger</label>
+            </div>
+            <div id="corr_zone_6" style="display:none;margin-top:10px">
+              <div class="date-picker-group">
+                <div class="dp-field"><label>Du :</label>
+                  <input type="date" id="new_du_6" value="2026-07-10" min="2026-04-01" max="2026-10-31" onchange="onDuChange(6)"></div>
+                <div class="dp-field"><label>Au :</label>
+                  <input type="date" id="new_au_6" value="2026-07-12" min="2026-07-10" max="2026-10-31" onchange="onAuChange(6)"></div>
+                <div class="dp-field"><label>Type :</label>
+                  <select id="new_type_6" class="type-select">
+                    <option >Congés</option>
+                    <option selected>Conv. perso</option>
+                    <option>Formation</option>
+                    <option>Sans astreinte</option>
+                  </select></div>
+                <div class="dp-field" style="justify-content:flex-end">
+                  <button class="btn-valider" id="btn_v_6" onclick="validerCorr(6)">&#10004; Valider</button>
+                </div>
+              </div>
+              <div class="date-error" id="date_err_6">&#9888; La date de fin doit être égale ou postérieure à la date de début.</div>
+            </div>
+            <div id="ok_msg_6" style="display:none;margin-top:5px"><span class="confirmed-badge">&#10003; Confirmé</span></div>
+            <div id="corr_msg_6" style="display:none;margin-top:5px"></div>
+          </td>
+        </tr>
+        <tr id="row_7">
+          <td class="period">31/07/2026</td>
+          <td class="period">02/08/2026</td>
+          <td class="dur">3 j</td>
+          <td><span class="badge bp">Conv. perso</span></td>
+          <td>
+            <div class="radio-group">
+              <label class="rlabel ok-label"><input type="radio" name="indisp_7" value="ok" onchange="setOk(7)"> &#10003; OK</label>
+              <label class="rlabel ko-label"><input type="radio" name="indisp_7" value="ko" onchange="setKo(7)"> &#9998; Corriger</label>
+            </div>
+            <div id="corr_zone_7" style="display:none;margin-top:10px">
+              <div class="date-picker-group">
+                <div class="dp-field"><label>Du :</label>
+                  <input type="date" id="new_du_7" value="2026-07-31" min="2026-04-01" max="2026-10-31" onchange="onDuChange(7)"></div>
+                <div class="dp-field"><label>Au :</label>
+                  <input type="date" id="new_au_7" value="2026-08-02" min="2026-07-31" max="2026-10-31" onchange="onAuChange(7)"></div>
+                <div class="dp-field"><label>Type :</label>
+                  <select id="new_type_7" class="type-select">
+                    <option >Congés</option>
+                    <option selected>Conv. perso</option>
+                    <option>Formation</option>
+                    <option>Sans astreinte</option>
+                  </select></div>
+                <div class="dp-field" style="justify-content:flex-end">
+                  <button class="btn-valider" id="btn_v_7" onclick="validerCorr(7)">&#10004; Valider</button>
+                </div>
+              </div>
+              <div class="date-error" id="date_err_7">&#9888; La date de fin doit être égale ou postérieure à la date de début.</div>
+            </div>
+            <div id="ok_msg_7" style="display:none;margin-top:5px"><span class="confirmed-badge">&#10003; Confirmé</span></div>
+            <div id="corr_msg_7" style="display:none;margin-top:5px"></div>
+          </td>
+        </tr>
+        <tr id="row_8">
+          <td class="period">07/08/2026</td>
+          <td class="period">09/08/2026</td>
+          <td class="dur">3 j</td>
+          <td><span class="badge bp">Conv. perso</span></td>
+          <td>
+            <div class="radio-group">
+              <label class="rlabel ok-label"><input type="radio" name="indisp_8" value="ok" onchange="setOk(8)"> &#10003; OK</label>
+              <label class="rlabel ko-label"><input type="radio" name="indisp_8" value="ko" onchange="setKo(8)"> &#9998; Corriger</label>
+            </div>
+            <div id="corr_zone_8" style="display:none;margin-top:10px">
+              <div class="date-picker-group">
+                <div class="dp-field"><label>Du :</label>
+                  <input type="date" id="new_du_8" value="2026-08-07" min="2026-04-01" max="2026-10-31" onchange="onDuChange(8)"></div>
+                <div class="dp-field"><label>Au :</label>
+                  <input type="date" id="new_au_8" value="2026-08-09" min="2026-08-07" max="2026-10-31" onchange="onAuChange(8)"></div>
+                <div class="dp-field"><label>Type :</label>
+                  <select id="new_type_8" class="type-select">
+                    <option >Congés</option>
+                    <option selected>Conv. perso</option>
+                    <option>Formation</option>
+                    <option>Sans astreinte</option>
+                  </select></div>
+                <div class="dp-field" style="justify-content:flex-end">
+                  <button class="btn-valider" id="btn_v_8" onclick="validerCorr(8)">&#10004; Valider</button>
+                </div>
+              </div>
+              <div class="date-error" id="date_err_8">&#9888; La date de fin doit être égale ou postérieure à la date de début.</div>
+            </div>
+            <div id="ok_msg_8" style="display:none;margin-top:5px"><span class="confirmed-badge">&#10003; Confirmé</span></div>
+            <div id="corr_msg_8" style="display:none;margin-top:5px"></div>
+          </td>
+        </tr>
+        <tr id="row_9">
+          <td class="period">26/09/2026</td>
+          <td class="period">18/10/2026</td>
+          <td class="dur">23 j<br><span style="font-size:7.5pt;color:#f57c00">&#9888; Déborde sur T4</span></td>
+          <td><span class="badge bc">Congés</span></td>
+          <td>
+            <div class="radio-group">
+              <label class="rlabel ok-label"><input type="radio" name="indisp_9" value="ok" onchange="setOk(9)"> &#10003; OK</label>
+              <label class="rlabel ko-label"><input type="radio" name="indisp_9" value="ko" onchange="setKo(9)"> &#9998; Corriger</label>
+            </div>
+            <div id="corr_zone_9" style="display:none;margin-top:10px">
+              <div class="date-picker-group">
+                <div class="dp-field"><label>Du :</label>
+                  <input type="date" id="new_du_9" value="2026-09-26" min="2026-04-01" max="2026-10-31" onchange="onDuChange(9)"></div>
+                <div class="dp-field"><label>Au :</label>
+                  <input type="date" id="new_au_9" value="2026-10-18" min="2026-09-26" max="2026-10-31" onchange="onAuChange(9)"></div>
+                <div class="dp-field"><label>Type :</label>
+                  <select id="new_type_9" class="type-select">
+                    <option selected>Congés</option>
+                    <option >Conv. perso</option>
+                    <option>Formation</option>
+                    <option>Sans astreinte</option>
+                  </select></div>
+                <div class="dp-field" style="justify-content:flex-end">
+                  <button class="btn-valider" id="btn_v_9" onclick="validerCorr(9)">&#10004; Valider</button>
+                </div>
+              </div>
+              <div class="date-error" id="date_err_9">&#9888; La date de fin doit être égale ou postérieure à la date de début.</div>
+            </div>
+            <div id="ok_msg_9" style="display:none;margin-top:5px"><span class="confirmed-badge">&#10003; Confirmé</span></div>
+            <div id="corr_msg_9" style="display:none;margin-top:5px"></div>
+          </td>
+        </tr></tbody></table>
+      <div id="ajouts_zone" style="margin-top:10px"></div>
+      <button class="btn-add" id="btn_add" onclick="ajouterPeriode()">+ Ajouter une période manquante</button>
+      <div id="add_limit" style="display:none;font-size:8pt;color:#888;margin-top:6px">Maximum 3 ajouts atteint.</div>
+    </div>
+
+    <div class="section">
+      <div class="sec-title" style="background:#5a6e7c">&#128172; Remarques générales</div>
+      <textarea class="rmq-box" id="remarques" placeholder="Contraintes non listées, préférences, commentaires sur le planning…"></textarea>
+    </div>
+
+    <div class="btn-zone">
+      <button class="btn btn-print" onclick="window.print()">&#128424; Imprimer</button>
+      <button class="btn btn-envoyer" onclick="preparerEnvoi()">&#128231; Préparer l'envoi</button>
+    </div>
+    <div class="footer-note">Planning HaD Fr · Fiche de validation T2-T3 2026 · Retour à : l.duteille@hadfrance.fr</div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal">
+  <div class="modal">
+    <h2>&#128203; Résumé à envoyer par email</h2>
+    <div class="sub-modal">&#128161; Cliquez sur <strong>Copier le texte</strong>, puis collez-le dans un nouvel email à <strong>l.duteille@hadfrance.fr</strong><br>
+    Objet suggéré : <em>Validation indisponibilités T2-T3 2026 — Dr Emilie BRES</em></div>
+    <textarea id="mail_content" readonly></textarea>
+    <div class="modal-btns">
+      <button class="btn-close" onclick="fermerModal()">Fermer</button>
+      <button class="btn-openmail" onclick="ouvrirEmail()">&#9993; Ouvrir messagerie</button>
+      <button class="btn-copy" onclick="copierTexte()">&#128203; Copier le texte</button>
+    </div>
+    <div id="copy_ok" class="copy-ok" style="display:none">&#10003; Copié dans le presse-papiers !</div>
+  </div>
+</div>
+<script>
+var NOM="Dr Emilie BRES",EMAIL="l.duteille@hadfrance.fr";
+var indisps=[{du:"08/04/2026",au:"19/04/2026",type:"Congés",idx:0},{du:"23/04/2026",au:"23/04/2026",type:"Conv. perso",idx:1},{du:"01/05/2026",au:"03/05/2026",type:"Conv. perso",idx:2},{du:"20/05/2026",au:"20/05/2026",type:"Conv. perso",idx:3},{du:"23/05/2026",au:"25/05/2026",type:"Conv. perso",idx:4},{du:"13/06/2026",au:"05/07/2026",type:"Congés",idx:5},{du:"10/07/2026",au:"12/07/2026",type:"Conv. perso",idx:6},{du:"31/07/2026",au:"02/08/2026",type:"Conv. perso",idx:7},{du:"07/08/2026",au:"09/08/2026",type:"Conv. perso",idx:8},{du:"26/09/2026",au:"18/10/2026",type:"Congés",idx:9}];
+var astrs=[{label:"Astreinte semaine S19",dates:"04 au 08/05/2026",idx:0}];
+var nbAjouts=0,MAX=3;
+
+function isoToFr(s){if(!s)return'';var p=s.split('-');return p[2]+'/'+p[1]+'/'+p[0];}
+
+function setAstrOk(i){
+  document.getElementById('astr_corr_'+i).style.display='none';
+  document.getElementById('astr_ok_'+i).innerHTML='<span class="confirmed-badge">&#10003; Confirmée</span>';
+  document.getElementById('astr_ok_'+i).style.display='block';
+}
+function setAstrKo(i){
+  document.getElementById('astr_corr_'+i).style.display='block';
+  document.getElementById('astr_ok_'+i).style.display='none';
+}
+function validerAstr(i){
+  var v=document.getElementById('astr_new_'+i).value.trim()||'(non précisé)';
+  document.getElementById('astr_corr_'+i).style.display='none';
+  document.getElementById('astr_ok_'+i).innerHTML='<span class="corrected-badge">&#9998; Modifiée : '+v+'</span>';
+  document.getElementById('astr_ok_'+i).style.display='block';
+}
+function setOk(i){
+  document.getElementById('corr_zone_'+i).style.display='none';
+  document.getElementById('ok_msg_'+i).style.display='block';
+  document.getElementById('corr_msg_'+i).style.display='none';
+  document.getElementById('row_'+i).style.background='#f0fff4';
+}
+function setKo(i){
+  document.getElementById('corr_zone_'+i).style.display='block';
+  document.getElementById('ok_msg_'+i).style.display='none';
+  document.getElementById('corr_msg_'+i).style.display='none';
+  document.getElementById('row_'+i).style.background='#fffde7';
+  checkDates(i);
+}
+function onDuChange(i){
+  var du=document.getElementById('new_du_'+i).value;
+  var auEl=document.getElementById('new_au_'+i);
+  auEl.min=du;
+  if(auEl.value&&auEl.value<du)auEl.value=du;
+  checkDates(i);
+}
+function onAuChange(i){checkDates(i);}
+function checkDates(i){
+  var du=document.getElementById('new_du_'+i).value;
+  var au=document.getElementById('new_au_'+i).value;
+  var err=document.getElementById('date_err_'+i);
+  var btn=document.getElementById('btn_v_'+i);
+  var ok=(du&&au&&au>=du)||(!du||!au);
+  if(err)err.className='date-error'+(ok?'':' show');
+  if(btn)btn.disabled=!ok;
+}
+function validerCorr(i){
+  var du=document.getElementById('new_du_'+i).value;
+  var au=document.getElementById('new_au_'+i).value;
+  var tp=document.getElementById('new_type_'+i).value;
+  if(du&&au&&au<du)return;
+  document.getElementById('corr_zone_'+i).style.display='none';
+  document.getElementById('corr_msg_'+i).innerHTML='<span class="corrected-badge">&#9998; '+isoToFr(du)+' &#8594; '+isoToFr(au)+' ('+tp+')</span>';
+  document.getElementById('corr_msg_'+i).style.display='block';
+  document.getElementById('row_'+i).style.background='#fff8e1';
+}
+function ajouterPeriode(){
+  if(nbAjouts>=MAX)return;
+  nbAjouts++;var n=nbAjouts;
+  var z=document.getElementById('ajouts_zone');
+  var d=document.createElement('div');
+  d.className='add-row';d.id='ajout_'+n;
+  d.innerHTML='<div><label>Du :</label><input type="date" id="add_du_'+n+'" min="2026-04-01" max="2026-10-31" onchange="syncAddAu('+n+')"></div>'
+    +'<div><label>Au :</label><input type="date" id="add_au_'+n+'" min="2026-04-01" max="2026-10-31" onchange="chkAdd('+n+')"></div>'
+    +'<div><label>Type :</label><select id="add_type_'+n+'" class="type-select"><option>Congés</option><option>Conv. perso</option><option>Formation</option><option>Sans astreinte</option></select></div>'
+    +'<button class="btn-remove" onclick="supprimerAjout('+n+')">&#x2715;</button>'
+    +'<div id="add_err_'+n+'" style="width:100%;font-size:7.5pt;color:#e53935;display:none">&#9888; Date de fin antérieure à la date de début.</div>';
+  z.appendChild(d);
+  if(nbAjouts>=MAX){document.getElementById('btn_add').style.display='none';document.getElementById('add_limit').style.display='block';}
+}
+function syncAddAu(n){
+  var du=document.getElementById('add_du_'+n).value;
+  var auEl=document.getElementById('add_au_'+n);
+  auEl.min=du;if(auEl.value&&auEl.value<du)auEl.value=du;
+  chkAdd(n);
+}
+function chkAdd(n){
+  var du=document.getElementById('add_du_'+n).value;
+  var au=document.getElementById('add_au_'+n).value;
+  var e=document.getElementById('add_err_'+n);
+  if(e)e.style.display=(du&&au&&au<du)?'block':'none';
+}
+function supprimerAjout(n){
+  var el=document.getElementById('ajout_'+n);if(el)el.remove();
+  nbAjouts=Math.max(0,nbAjouts-1);
+  document.getElementById('btn_add').style.display='inline-block';
+  document.getElementById('add_limit').style.display='none';
+}
+function preparerEnvoi(){
+  var t="=== VALIDATION INDISPONIBILITÉS T2-T3 2026 ===\n";
+  t+="Médecin : "+NOM+"\n";
+  t+="Date    : "+new Date().toLocaleDateString('fr-FR')+"\n\n";
+  if(astrs.length){
+    t+="--- ASTREINTES PRÉ-POSITIONNÉES ---\n";
+    astrs.forEach(function(a){
+      var c=document.querySelector('input[name="astr_'+a.idx+'"]:checked');
+      var okEl=document.getElementById('astr_ok_'+a.idx);
+      var s=c?(c.value==='ok'?(okEl?okEl.innerText.trim():'Confirmée'):'A MODIFIER : '+(document.getElementById('astr_new_'+a.idx)?document.getElementById('astr_new_'+a.idx).value:'')):'Non renseigné';
+      t+="* "+a.label+" ("+a.dates+") : "+s+"\n";
+    });
+    t+="\n";
+  }
+  if(indisps.length){
+    t+="--- INDISPONIBILITÉS ---\n";
+    indisps.forEach(function(ind){
+      var c=document.querySelector('input[name="indisp_'+ind.idx+'"]:checked');
+      var l="* "+ind.du+" -> "+ind.au+" ("+ind.type+") : ";
+      if(!c)l+="Non renseigné";
+      else if(c.value==='ok')l+="OK confirmé";
+      else{var cm=document.getElementById('corr_msg_'+ind.idx);l+="CORRECTION : "+(cm&&cm.innerText.trim()?cm.innerText.trim():"(non validée)");}
+      t+=l+"\n";
+    });
+    t+="\n";
+  }
+  var ajTxt="";
+  for(var n=1;n<=3;n++){
+    var du=document.getElementById('add_du_'+n);
+    var au=document.getElementById('add_au_'+n);
+    var tp=document.getElementById('add_type_'+n);
+    if(du&&du.value)ajTxt+="* AJOUT : "+isoToFr(du.value)+" -> "+isoToFr(au?au.value:'')+" ("+(tp?tp.value:"?")+")\n";
+  }
+  if(ajTxt)t+="--- PÉRIODES AJOUTÉES ---\n"+ajTxt+"\n";
+  var rmq=document.getElementById('remarques').value.trim();
+  if(rmq)t+="--- REMARQUES ---\n"+rmq+"\n\n";
+  t+="---\nEnvoyé depuis la fiche de validation Planning HaD Fr T2-T3 2026";
+  document.getElementById('mail_content').value=t;
+  document.getElementById('copy_ok').style.display='none';
+  document.getElementById('modal').className='modal-overlay show';
+}
+function fermerModal(){document.getElementById('modal').className='modal-overlay';}
+function copierTexte(){
+  var ta=document.getElementById('mail_content');
+  ta.select();ta.setSelectionRange(0,99999);
+  document.execCommand('copy');
+  document.getElementById('copy_ok').style.display='block';
+}
+function ouvrirEmail(){
+  var s=encodeURIComponent("Validation indisponibilités T2-T3 2026 - "+NOM);
+  window.location.href="mailto:"+EMAIL+"?subject="+s;
+}
+</script>
+</body>
+</html>
